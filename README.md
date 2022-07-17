@@ -1,4 +1,4 @@
-Change 16/07/2022 @16:20
+Change 17/07/2022 @10:02
 
 - Application is written on ```ReactJs``` and need ```node 14``` run properly 
 
