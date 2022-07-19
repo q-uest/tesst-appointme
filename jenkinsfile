@@ -16,6 +16,8 @@ pipeline {
     stage("Create Docker image") 
       {
     
+      steps {
+      
         withCredentials([usernamePassword(credentialsId: 'nexus-secret', passwordVariable: 'pass', usernameVariable: 'username')]) 
         {
       
@@ -28,6 +30,8 @@ pipeline {
 		     }
 
        }
+       }
+       
   stage("Trivy Docker scan") 
   {
     steps 
