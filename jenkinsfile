@@ -4,7 +4,9 @@ pipeline {
   {
 		DOCKERHUB_CREDENTIALS=credentials('ram-dockerhub-login')
 		TRIVY_CRITICAL_THRES=333
-		DOCK_IMG_NAME="10.182.0.16/appointme-admin-api:ram-new"
+		NEXUS_REG_IP=10.182.0.16
+		NEXUS_REG_PORT=8082
+		DOCK_IMG_NAME=${NEXUS_REG_IP}/appointme-admin-api:${BUILD_NUMBER}
 		date_format = new Date().format('dd-MM-yy-HHmm')
 			
   }
@@ -18,7 +20,7 @@ pipeline {
       
               sh '''
                 sudo docker build -t ${DOCK_IMG_NAME} .
-                sudo docker login -u ${username} -p ${pass} ${NGINX_PROXY_URL}
+                sudo docker login -u ${username} -p ${pass} ${NEXUS_REG_IP}:${NEXUS_REG_PORT}
                 sudo docker push ${DOCK_IMG_NAME}
                 
                 '''
