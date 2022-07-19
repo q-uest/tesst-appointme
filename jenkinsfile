@@ -30,8 +30,9 @@ pipeline {
     steps 
     {
      sh '''
-	      sudo trivy image ${DOCK_IMG_NAME} |sed -n '8,8p'
-	      TH=`sudo trivy image ${DOCK_IMG_NAME} |sed -n '8,8p'|cut -d ":" -f7|cut -d ")" -f1`
+     
+	      sudo trivy image ${DOCK_IMG_NAME} 2>/dev/null |grep "Total: [0-9]" 
+	      TH=`sudo trivy image ${DOCK_IMG_NAME} 2>/dev/null |grep "Total: [0-9]" |cut -d ":" -f7|cut -d ")" -f1`
 	      
         if [ -z "${TH}" ] || [ $TH -gt ${TRIVY_CRITICAL_THRES} ]
 	      then   
