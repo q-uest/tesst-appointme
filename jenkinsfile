@@ -22,7 +22,7 @@ pipeline {
         {
       
               sh '''
-                sudo docker build -t ${DOCK_IMG_NAME} .
+                sudo docker build -t env.DOCK_IMG_NAME .
                 sudo docker login -u ${username} -p ${pass} ${NEXUS_REG_IP}:${NEXUS_REG_PORT}
                 sudo docker push ${DOCK_IMG_NAME}
                 
