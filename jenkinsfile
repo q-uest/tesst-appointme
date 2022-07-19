@@ -3,7 +3,7 @@ pipeline {
   agent any 
   environment 
   {
-		DOCKERHUB_CREDENTIALS=credentials('ram-dockerhub-login')
+		
 		TRIVY_CRITICAL_THRES=333
 		NEXUS_REG_IP='10.182.0.16'
 		NEXUS_REG_PORT=8082
