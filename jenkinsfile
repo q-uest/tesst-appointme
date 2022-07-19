@@ -39,13 +39,14 @@ pipeline {
      sh '''
      
 	      sudo trivy image ${DOCK_IMG_NAME} 2>/dev/null |grep "Total: [0-9]" 
-	      TH=`sudo trivy image ${DOCK_IMG_NAME} 2>/dev/null |grep "Total: [0-9]" |cut -d ":" -f7|cut -d ")" -f1`
-	      
-        if [ -z "${TH}" ] || [ $TH -gt ${TRIVY_CRITICAL_THRES} ]
-	      then   
-	         echo "FAILED:Critical: "${TH} " has Crossed the Critical Threshold Limit of "${TRIVY_CRITICAL_THRES} !!!!!
-		       exit 1
-	      fi
+	      for TH in `sudo trivy image ${DOCK_IMG_NAME} 2>/dev/null |grep "Total: [0-9]" |cut -d ":" -f7|cut -d ")" -f1`
+	      do
+                  if [ -z "${TH}" ] || [ $TH -gt ${TRIVY_CRITICAL_THRES} ]
+	          then   
+	              echo "FAILED:Critical: "${TH} " has Crossed the Critical Threshold Limit of "${TRIVY_CRITICAL_THRES} !!!!!
+		      exit 1
+	          fi
+	      done
 	      
 	      '''
  
