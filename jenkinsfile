@@ -8,9 +8,11 @@ pipeline {
 		NEXUS_REG_IP='10.182.0.16'
 		NEXUS_REG_PORT=8082
 		DOCK_IMG_NAME="${NEXUS_REG_IP}:${NEXUS_REG_PORT}/appointme-admin-api:${BUILD_NUMBER}"
+    K8S_IMG_NAME="${NEXUS_REG_IP}:${NEXUS_REG_PORT}\/appointme-admin-api:${BUILD_NUMBER}"
 		date_format = new Date().format('dd-MM-yy-HHmm')
 			
   }
+
   stages 
   {
     stage("Create Docker image") 
@@ -30,7 +32,7 @@ pipeline {
 		     }
 
        }
-       }
+    }
        
   stage("Trivy Docker scan") 
   {
@@ -53,5 +55,18 @@ pipeline {
      }
     }  
 	     
+   
+
+   stage("Deploy into Dev")
+   {
+    steps
+     {
+      sh '''
+
+      sed  's/<NEW_IMAGE_NAME>/'${DOCK_IMG_NAME}'/g' k8s-deploy-template.yml > k8-deploy.yaml
+      kubectl apply -f k8-deploy.yaml -n dev
+
+      ''' 
+     }
    }
-  }
+}
