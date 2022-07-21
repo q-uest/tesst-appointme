@@ -16,7 +16,7 @@ spec:
         app: adm-api
     spec:
       containers:
-        - image: oshokumar/appointme-admin-api:1.1
+        - image: <NEW_IMAGE_NAME>
           imagePullPolicy: "IfNotPresent"
           name: admin-api
           ports:
