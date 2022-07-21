@@ -61,7 +61,7 @@ pipeline {
     {
        steps
        {
-         echo K8S_IMG_NAME=${K8S_IMG_NAME}
+         echo "K8S_IMG_NAME=${K8S_IMG_NAME}"
           sh '''
           sed  's/<NEW_IMAGE_NAME>/'${K8S_IMG_NAME}'/g' k8s-deploy-template.yml > k8-deploy.yaml
           kubectl apply -f k8-deploy.yaml -n dev
