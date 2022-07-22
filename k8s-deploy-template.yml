@@ -21,6 +21,8 @@ spec:
           name: admin-api
           ports:
             - containerPort: 5050
+      imagePullSecrets:
+        - name: regcred
 
 ---
 apiVersion: v1
