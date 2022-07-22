@@ -8,7 +8,10 @@ pipeline {
 		NEXUS_REG_IP='10.182.0.16'
 		NEXUS_REG_PORT=8082
 		DOCK_IMG_NAME="${NEXUS_REG_IP}:${NEXUS_REG_PORT}/appointme-admin-api:${BUILD_NUMBER}"
+		
+		// K8S_IMG_NAME needed by the SED command to replace a literal value in the template with a new image (with "slace" as part of it)  //
                 K8S_IMG_NAME="${NEXUS_REG_IP}:${NEXUS_REG_PORT}\\/appointme-admin-api:${BUILD_NUMBER}"
+		
 		date_format = new Date().format('dd-MM-yy-HHmm')
 			
    }
