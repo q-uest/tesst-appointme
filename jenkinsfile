@@ -62,14 +62,39 @@ pipeline {
 
     stage("Deploy into Dev")
     {
-       steps
-       {
-         echo "K8S_IMG_NAME=${K8S_IMG_NAME}"
-          sh '''
-          sed  's/<NEW_IMAGE_NAME>/'${K8S_IMG_NAME}'/g' k8s-deploy-template.yml > k8-deploy.yaml
-          kubectl apply -f k8-deploy.yaml -n dev
-          ''' 
-       }
-     }
-  }
+      steps
+      {
+       
+          step
+	      {
+                echo "K8S_IMG_NAME=${K8S_IMG_NAME}"
+                sh '''
+                sed  's/<NEW_IMAGE_NAME>/'${K8S_IMG_NAME}'/g' k8s-deploy-template.yml > k8-deploy.yaml
+                kubectl apply -f k8-deploy.yaml -n dev
+	  
+	        # Add a check to see the APP is working
+	         #######
+	  
+	         '''
+	        }
+	   
+	      step
+	      {
+	  
+	         # Add a new tag to the deployed image in Nexus repository to mark it has been rolled out to Dev 
+	          #########
+	  
+	  
+	          withCredentials([usernamePassword(credentialsId: 'nexus-secret', passwordVariable: 'pass', usernameVariable: 'username')]) 
+                 {
+                  sh '''
+                  sudo docker login -u ${username} -p ${pass} ${NEXUS_REG_IP}:${NEXUS_REG_PORT}
+                  sudo docker tag $DOCK_IMG_NAME ${DOCK_IMG_NAME}_DEV
+		          sudo docker push $DOCK_IMG_NAME ${DOCK_IMG_NAME}_DEV                
+                  '''
+	          }  
+	        }
+	  
+        }
+    }
 }
