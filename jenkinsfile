@@ -95,7 +95,7 @@ pipeline
                     sudo docker login -u ${username} -p ${pass} ${NEXUS_REG_IP}:${NEXUS_REG_PORT}
                     sudo docker tag $DOCK_IMG_NAME ${ADD_DEV_TAG}
 		            sudo docker push ${ADD_DEV_TAG}
-	             curl http://${username}:${pass}@{NEXUS_REG_IP}:${NEXUS_REG_PORT}/v2/${REPO_NAME}/tags/list |sed 's/,/\n/g'|grep "\-DEV" > $WORKSPACE/dev-param.lst
+	             curl http://${username}:${pass}@{NEXUS_REG_IP}:${NEXUS_REG_PORT}/v2/${REPO_NAME}/tags/list |sed 's/,/\n/g'|grep "\\-DEV" > $WORKSPACE/dev-param.lst
 		     cat $WORKSPACE/dev-param.lst
                       '''
 	            }  
