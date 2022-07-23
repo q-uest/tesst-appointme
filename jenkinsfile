@@ -1,4 +1,5 @@
-pipeline {
+pipeline 
+{
 
   agent any 
   environment 
@@ -18,84 +19,83 @@ pipeline {
 
   stages 
   {
-    stage("Create Docker image") 
-    {
+        stage("Create Docker image") 
+        {
     
-        steps 
-          {
-      
-           withCredentials([usernamePassword(credentialsId: 'nexus-secret', passwordVariable: 'pass', usernameVariable: 'username')]) 
+            steps 
             {
       
-              sh '''
-                sudo docker build -t ${DOCK_IMG_NAME} .
-                sudo docker login -u ${username} -p ${pass} ${NEXUS_REG_IP}:${NEXUS_REG_PORT}
-                sudo docker push ${DOCK_IMG_NAME}
+                withCredentials([usernamePassword(credentialsId: 'nexus-secret', passwordVariable: 'pass', usernameVariable: 'username')]) 
+                {
+      
+                  sh '''
+                   sudo docker build -t ${DOCK_IMG_NAME} .
+                   sudo docker login -u ${username} -p ${pass} ${NEXUS_REG_IP}:${NEXUS_REG_PORT}
+                   sudo docker push ${DOCK_IMG_NAME}
                 
-                '''
+                   '''
 		        }
-         }
-     }
+            }
+        }
        
-  stage("Trivy Docker scan") 
-  {
-      steps 
-      {
-           sh '''
+       stage("Trivy Docker scan") 
+       {
+            steps 
+            {
+               sh '''
      
-	         sudo trivy image ${DOCK_IMG_NAME} 2>/dev/null |grep "Total: [0-9]" 
-	         for TH in `sudo trivy image ${DOCK_IMG_NAME} 2>/dev/null |grep "Total: [0-9]" |cut -d ":" -f7|cut -d ")" -f1`
-	         do
-                  if [ -z "${TH}" ] || [ $TH -gt ${TRIVY_CRITICAL_THRES} ]
+	            sudo trivy image ${DOCK_IMG_NAME} 2>/dev/null |grep "Total: [0-9]" 
+	            for TH in `sudo trivy image ${DOCK_IMG_NAME} 2>/dev/null |grep "Total: [0-9]" |cut -d ":" -f7|cut -d ")" -f1`
+	            do
+                    if [ -z "${TH}" ] || [ $TH -gt ${TRIVY_CRITICAL_THRES} ]
 	                then   
 	                  echo "FAILED:Critical: "${TH} " has Crossed the Critical Threshold Limit of "${TRIVY_CRITICAL_THRES} !!!!!
-		                exit 1
+		            exit 1
 	                fi
 	           done
 	      
-	      '''
+	           '''
  
-       }
-    }  
+            }
+        }  
 	     
    
 
-    stage("Deploy into Dev")
-    {
-      steps
-      {
+        stage("Deploy into Dev")
+        {
+            steps
+            {
        
-          step
-	      {
-                echo "K8S_IMG_NAME=${K8S_IMG_NAME}"
-                sh '''
-                sed  's/<NEW_IMAGE_NAME>/'${K8S_IMG_NAME}'/g' k8s-deploy-template.yml > k8-deploy.yaml
-                kubectl apply -f k8-deploy.yaml -n dev
+               step
+	           {
+                   echo "K8S_IMG_NAME=${K8S_IMG_NAME}"
+                   sh '''
+                   sed  's/<NEW_IMAGE_NAME>/'${K8S_IMG_NAME}'/g' k8s-deploy-template.yml > k8-deploy.yaml
+                   kubectl apply -f k8-deploy.yaml -n dev
 	  
-	        # Add a check to see the APP is working
-	         #######
+	               # Add a check to see the APP is working
+	                #######
 	  
-	         '''
-	        }
+	               '''
+	           }
 	   
-	      step
-	      {
-	  
-	         
-	  
-	          withCredentials([usernamePassword(credentialsId: 'nexus-secret', passwordVariable: 'pass', usernameVariable: 'username')]) 
-                 {
-                  sh '''
+	           step
+	           {
+	           
+	                withCredentials([usernamePassword(credentialsId: 'nexus-secret', passwordVariable: 'pass', usernameVariable: 'username')]) 
+                    {
+                      sh '''
 		  
-		  # Add a new tag to the deployed image in Nexus repository to mark it has been rolled out to Dev 
-	          #########
+		              # Add a new tag to the deployed image in Nexus repository to mark it has been rolled out to Dev 
+	                   #########
 	  
-                  sudo docker login -u ${username} -p ${pass} ${NEXUS_REG_IP}:${NEXUS_REG_PORT}
-                  sudo docker tag $DOCK_IMG_NAME ${DOCK_IMG_NAME}_DEV
-		  sudo docker push $DOCK_IMG_NAME ${DOCK_IMG_NAME}_DEV                
-                  '''
-	          }  
-	        }
+                      sudo docker login -u ${username} -p ${pass} ${NEXUS_REG_IP}:${NEXUS_REG_PORT}
+                      sudo docker tag $DOCK_IMG_NAME ${DOCK_IMG_NAME}_DEV
+		              sudo docker push $DOCK_IMG_NAME ${DOCK_IMG_NAME}_DEV                
+                      '''
+	                }  
+	           }
+            }
 	  
         }
     }
