@@ -87,7 +87,7 @@ pipeline
 	  
                     sudo docker login -u ${username} -p ${pass} ${NEXUS_REG_IP}:${NEXUS_REG_PORT}
                     sudo docker tag $DOCK_IMG_NAME ${DOCK_IMG_NAME}_DEV
-		            sudo docker push $DOCK_IMG_NAME ${DOCK_IMG_NAME}_DEV                
+		            sudo docker push ${DOCK_IMG_NAME}_DEV                
                       '''
 	            }  
 	        }
