@@ -13,6 +13,8 @@ pipeline
 		// K8S_IMG_NAME needed by the SED command to replace a literal value in the template with a new image (with "slace" as part of it)  //
                 K8S_IMG_NAME="${NEXUS_REG_IP}:${NEXUS_REG_PORT}\\/appointme-admin-api:${BUILD_NUMBER}"
 		
+		//The image deployed in DEV should have the tag updated to include the string DEV  //
+		ADD-DEV-TAG=$DOCK_IMG_NAME ${DOCK_IMG_NAME}-DEV
 		date_format = new Date().format('dd-MM-yy-HHmm')
 			
    }
@@ -86,8 +88,8 @@ pipeline
 	                #########
 	  
                     sudo docker login -u ${username} -p ${pass} ${NEXUS_REG_IP}:${NEXUS_REG_PORT}
-                    sudo docker tag $DOCK_IMG_NAME ${DOCK_IMG_NAME}_DEV
-		            sudo docker push ${DOCK_IMG_NAME}_DEV                
+                    sudo docker tag $DOCK_IMG_NAME ${ADD-DEV-TAG}
+		            sudo docker push ${ADD-DEV-TAG}
                       '''
 	            }  
 	        }
