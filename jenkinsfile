@@ -14,7 +14,7 @@ pipeline
                 K8S_IMG_NAME="${NEXUS_REG_IP}:${NEXUS_REG_PORT}\\/appointme-admin-api:${BUILD_NUMBER}"
 		
 		//The image deployed in DEV should have the tag updated to include the string DEV  //
-		ADD_DEV_TAG=${DOCK_IMG_NAME}-DEV
+		ADD_DEV_TAG=${DOCK_IMG_NAME}+'-DEV'
 		
 		date_format = new Date().format('dd-MM-yy-HHmm')
 			
