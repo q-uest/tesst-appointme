@@ -98,8 +98,8 @@ pipeline
 	             echo ""
 	             echo "Images that are Deployed onto DEV......."
 		     echo ""
-	             curl http://${username}:${pass}@${NEXUS_REG_IP}:${NEXUS_REG_PORT}/v2/${REPO_NAME}/tags/list |sed 's/,/\\n/g'|grep "\\-DEV" > ${DEV_TAGGED_IMGLST}
-		     sed 's/^"/"appointme-admin-api:/g' ${DEV_TAGGED_IMGLST} > ${DEV_TAGGED_IMGLST}
+	             curl http://${username}:${pass}@${NEXUS_REG_IP}:${NEXUS_REG_PORT}/v2/${REPO_NAME}/tags/list |sed 's/,/\\n/g'|grep "\\-DEV" > /tmp/dev-tagged.lst
+		     sed 's/^"/"appointme-admin-api:/g' /tmp/dev-tagged.lst > ${DEV_TAGGED_IMGLST}
 		     cat ${DEV_TAGGED_IMGLST}
                       '''
 	            }  
