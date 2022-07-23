@@ -17,7 +17,7 @@ pipeline
 		
 		//The image deployed in DEV should have the tag updated to include the string DEV  //
 		ADD_DEV_TAG="${DOCK_IMG_NAME}"+"-DEV"
-		
+		DEV_TAGGED_IMGLST="$HOME/workspace/dev-param.lst"
 		
 		
 		date_format = new Date().format('dd-MM-yy-HHmm')
@@ -98,8 +98,9 @@ pipeline
 	             echo ""
 	             echo "Images that are Deployed onto DEV......."
 		     echo ""
-	             curl http://${username}:${pass}@${NEXUS_REG_IP}:${NEXUS_REG_PORT}/v2/${REPO_NAME}/tags/list |sed 's/,/\\n/g'|grep "\\-DEV" > $WORKSPACE/dev-param.lst
-		     cat $WORKSPACE/dev-param.lst
+	             curl http://${username}:${pass}@${NEXUS_REG_IP}:${NEXUS_REG_PORT}/v2/${REPO_NAME}/tags/list |sed 's/,/\\n/g'|grep "\\-DEV" > ${DEV_TAGGED_IMGLST}
+		     sed 's/^"/"appointme-admin-api:/g' ${DEV_TAGGED_IMGLST} > ${DEV_TAGGED_IMGLST}
+		     cat ${DEV_TAGGED_IMGLST}
                       '''
 	            }  
 	        }
