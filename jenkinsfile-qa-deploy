@@ -20,10 +20,11 @@ pipeline {
         {
             steps {
 
-            
+               
 	
                 sh '''
-                sed  's/<NEW_IMAGE_NAME>/'${params.docker_image}'/g' k8s-deploy-template.yml > k8-deploy.yaml
+		echo DOCK_IMG_NAME=${DOCK_IMG_NAME}
+                sed  's/<NEW_IMAGE_NAME>/'${DOCK_IMG_NAME}'/g' k8s-deploy-template.yml > k8-deploy.yaml
                 kubectl apply -f k8-deploy.yaml -n qa
                         
                 # Add a check whether the deployment is working
