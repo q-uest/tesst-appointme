@@ -7,7 +7,7 @@ pipeline {
 		NEXUS_REG_PORT=8082
     
 		REPO_NAME="appointme-admin-api"
-        DOCK_IMG_NAME="${NEXUS_REG_IP}:${NEXUS_REG_PORT}/${params.Docker-Image}"
+        DOCK_IMG_NAME="${NEXUS_REG_IP}:${NEXUS_REG_PORT}/"+"${params.docker_image}"
 
         ADD_QA_TAG="${DOCK_IMG_NAME}"+"-QA"
         QA_TAGGED_IMGLST="$HOME"+"/workspace"
@@ -23,7 +23,7 @@ pipeline {
             
 	
                 sh '''
-                sed  's/<NEW_IMAGE_NAME>/'${params.Docker-Image}'/g' k8s-deploy-template.yml > k8-deploy.yaml
+                sed  's/<NEW_IMAGE_NAME>/'${params.docker_image}'/g' k8s-deploy-template.yml > k8-deploy.yaml
                 kubectl apply -f k8-deploy.yaml -n qa
                         
                 # Add a check whether the deployment is working
