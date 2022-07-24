@@ -87,8 +87,7 @@ pipeline
 	           
 	            withCredentials([usernamePassword(credentialsId: 'nexus-secret', passwordVariable: 'pass', usernameVariable: 'username')]) 
                 {
-                    sh 
-		    '''
+                    sh '''
 		  
 		            # Add a new tag to the deployed image in Nexus repository to mark it has been rolled out to Dev 
 	                #########
