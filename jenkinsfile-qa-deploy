@@ -9,7 +9,7 @@ pipeline {
 		REPO_NAME="appointme-admin-api"
         DOCK_IMG_NAME="${NEXUS_REG_IP}:${NEXUS_REG_PORT}/${params.Docker-Image}"
 
-        ADD_QA_TAG=${DOCK_IMG_NAME}+"-QA"
+        ADD_QA_TAG="${DOCK_IMG_NAME}"+"-QA"
         QA_TAGGED_IMGLST="$HOME"+"/workspace"
                     
         
