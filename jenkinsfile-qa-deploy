@@ -1,0 +1,57 @@
+pipeline {
+
+     agent any;
+
+    environment {
+        NEXUS_REG_IP='10.182.0.16'
+		NEXUS_REG_PORT=8082
+    
+		REPO_NAME="appointme-admin-api"
+        DOCK_IMG_NAME="${NEXUS_REG_IP}:${NEXUS_REG_PORT}/${params.Docker-Image}"
+
+        ADD_QA_TAG=${DOCK_IMG_NAME}-QA
+        QA_TAGGED_IMGLST=$HOME/workspace
+                    
+        
+    }
+    stages {
+       
+        stage('Deploy the image into QA')
+        {
+            sed  's/<NEW_IMAGE_NAME>/'${params.Docker-Image}'/g' k8s-deploy-template.yml > k8-deploy.yaml
+            kubectl apply -f k8-deploy.yaml -n qa
+            
+            # Add a check whether the deployment is working
+            #####
+
+
+        }
+
+
+        stage('Update the Tag of the image to indicate it is deployed in QA')
+        {
+            withCredentials([usernamePassword(credentialsId: 'nexus-secret', passwordVariable: 'pass', usernameVariable: 'username')]) 
+                {
+                    sh '''
+		  
+		            # Add a new tag to the deployed image in Nexus repository to mark it has been rolled out to Dev 
+	                #########
+	                sudo docker login -u ${username} -p ${pass} ${NEXUS_REG_IP}:${NEXUS_REG_PORT}
+                    sudo docker tag $DOCK_IMG_NAME ${ADD_QA_TAG}
+		            sudo docker push ${ADD_QA_TAG}
+	                echo ""
+	                echo "Images that are Deployed onto QA......."
+		            echo ""
+	                curl http://${username}:${pass}@${NEXUS_REG_IP}:${NEXUS_REG_PORT}/v2/${REPO_NAME}/tags/list |sed 's/,/\\n/g'|grep "\\-DEV-QA" > /tmp/qa-tagged.lst
+		            sed 's/^"/"'${REPO_NAME}':/g' /tmp/qa-tagged.lst > ${QA_TAGGED_IMGLST}
+		            cat ${QA_TAGGED_IMGLST}
+                    '''
+	            }  
+           }
+    }
+}
+
+
+
+
+
