@@ -18,12 +18,14 @@ pipeline {
        
         stage('Deploy the image into QA')
         {
+	
+	   sh '''
             sed  's/<NEW_IMAGE_NAME>/'${params.Docker-Image}'/g' k8s-deploy-template.yml > k8-deploy.yaml
             kubectl apply -f k8-deploy.yaml -n qa
             
             # Add a check whether the deployment is working
             #####
-
+            '''
 
         }
 
