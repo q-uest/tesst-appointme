@@ -16,7 +16,7 @@ pipeline {
     }
     stages {
        
-        stage('Deploy the image into QA')
+        stage("Deploy the image into QA")
         {
             steps {
 
@@ -28,7 +28,8 @@ pipeline {
                         
                 # Add a check whether the deployment is working
                 #####
-            }  '''
+              '''
+            }
 
         }
 
@@ -60,4 +61,3 @@ pipeline {
     }
 }
 
-}
