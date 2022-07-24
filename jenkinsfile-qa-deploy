@@ -27,6 +27,8 @@ pipeline {
                 sh '''
 		echo DOCK_IMG_NAME=${DOCK_IMG_NAME}
                 sed  's/<NEW_IMAGE_NAME>/'${SED_DOCKER_IMG_NAME}'/g' k8s-deploy-template.yml > k8-deploy.yaml
+		export GOOGLE_APPLICATION_CREDENTIALS=/var/lib/jenkins/.kube/key.json
+		export KUBECONFIG=/var/lib/jenkins/.kube/kubeconfig.yaml
                 kubectl apply -f k8-deploy.yaml -n qa
                         
                 # Add a check whether the deployment is working
