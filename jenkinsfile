@@ -19,7 +19,7 @@ pipeline
 		ADD_DEV_TAG="${DOCK_IMG_NAME}"+"-DEV"
 		DEV_TAGGED_IMGLST="$HOME/workspace/dev-param.lst"
 		
-		// K8s manifest Template to be used for Dev //
+		// K8s manifest Template to be used for Dev  //
 		
 		k8s_template_file=k8s-deploy-dev-template.yml
 		
