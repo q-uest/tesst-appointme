@@ -79,7 +79,7 @@ pipeline
        
                 echo "K8S_IMG_NAME=${K8S_IMG_NAME}"
                 sh '''
-                sed  's/<NEW_IMAGE_NAME>/'${K8S_IMG_NAME}'/g' {k8s_template_file} > k8-deploy.yaml
+                sed  's/<NEW_IMAGE_NAME>/'${K8S_IMG_NAME}'/g' ${k8s_template_file} > k8-deploy.yaml
 		
 		
 		# Export the Shell variables required to access the GKE cluster
