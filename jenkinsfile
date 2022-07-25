@@ -21,7 +21,7 @@ pipeline
 		
 		// K8s manifest Template to be used for Dev  //
 		
-		k8s_template_file=k8s-deploy-dev-template.yml
+		k8s_template_file="k8s-deploy-dev-template.yml"
 		
 		
 		date_format = new Date().format('dd-MM-yy-HHmm')
