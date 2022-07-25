@@ -23,6 +23,15 @@ pipeline
 		
 		k8s_template_file="k8s-deploy-dev-template.yml"
 		
+		//==================================================//
+		
+		// Provide the DEV cluster Details and GCP Priavte Key details here //
+		
+		JEN_KUBECONFIG="/var/lib/jenkins/.kube/kubeconfig.yaml"
+		JEN_GCP_CRED_KEY="/var/lib/jenkins/.kube/key.json"
+		
+                //================================================//
+		
 		
 		date_format = new Date().format('dd-MM-yy-HHmm')
 			
@@ -85,8 +94,12 @@ pipeline
 		# Export the Shell variables required to access the GKE cluster
 		######################
 		
-		export GOOGLE_APPLICATION_CREDENTIALS=/var/lib/jenkins/.kube/key.json
-		export KUBECONFIG=/var/lib/jenkins/.kube/kubeconfig.yaml
+		
+		JEN_KUBECONFIG="/var/lib/jenkins/.kube/kubeconfig.yaml"
+		JEN_GCP_CRED_KEY="/var/lib/jenkins/.kube/key.json"
+		
+		export GOOGLE_APPLICATION_CREDENTIALS=${JEN_GCP_CRED_KEY}
+		export KUBECONFIG=${JEN_KUBECONFIG}
 		
                 kubectl apply -f k8-deploy.yaml -n dev
 	  
