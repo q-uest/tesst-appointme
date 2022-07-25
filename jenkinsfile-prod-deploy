@@ -1,0 +1,58 @@
+pipeline {
+
+     agent any;
+
+    environment {
+        NEXUS_REG_IP='10.182.0.16'
+    		NEXUS_REG_PORT=8082
+    
+		   REPO_NAME="appointme-admin-api"
+        DOCK_IMG_NAME="${NEXUS_REG_IP}:${NEXUS_REG_PORT}/"+"${params.docker_image}"
+	
+	    SED_DOCKER_IMG_NAME="${NEXUS_REG_IP}:${NEXUS_REG_PORT}\\/${params.docker_image}"
+	
+	                        
+        
+    }
+    stages {
+       
+        stage("Deploy the image into QA")
+        {
+            steps {
+
+               
+	
+                sh '''
+		                  echo DOCK_IMG_NAME=${DOCK_IMG_NAME}
+		
+		                  # Generate Kubernetes Deployment manifest from the template
+		                  #####################
+                      
+                      sed  's/<NEW_IMAGE_NAME>/'${SED_DOCKER_IMG_NAME}'/g' k8s-deploy-template.yml > k8-deploy.yaml
+		
+		
+		                # Export the Shell variables required to access the GKE cluster
+		                ######################
+                    
+		                export GOOGLE_APPLICATION_CREDENTIALS=/var/lib/jenkins/.kube/key.json
+		                export KUBECONFIG=/var/lib/jenkins/.kube/kubeconfig.yaml
+		
+		                # Deploy in the namespace called "prod"
+		                 ##########
+		
+                    kubectl apply -f k8-deploy.yaml -n prod
+                        
+                    # Add a check whether the deployment is working
+                    #####
+                    
+                    
+                    
+                    
+              '''
+            }
+
+        }
+
+
+    }
+}
