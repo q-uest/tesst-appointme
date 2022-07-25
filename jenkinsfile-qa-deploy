@@ -26,9 +26,22 @@ pipeline {
 	
                 sh '''
 		echo DOCK_IMG_NAME=${DOCK_IMG_NAME}
+		
+		# Generate Kubernetes Deployment manifest from the template
+		#####################
                 sed  's/<NEW_IMAGE_NAME>/'${SED_DOCKER_IMG_NAME}'/g' k8s-deploy-template.yml > k8-deploy.yaml
+		
+		
+		# Export the Shell variables required to access the GKE cluster
+		######################
 		export GOOGLE_APPLICATION_CREDENTIALS=/var/lib/jenkins/.kube/key.json
 		export KUBECONFIG=/var/lib/jenkins/.kube/kubeconfig.yaml
+		
+		
+		
+		# Deploy in the namespace called "qa"
+		##########
+		
                 kubectl apply -f k8-deploy.yaml -n qa
                         
                 # Add a check whether the deployment is working
