@@ -71,7 +71,7 @@ pipeline {
                             echo ""
                             echo "Images that are Deployed onto QA......."
                             echo ""
-                            curl http://${username}:${pass}@${NEXUS_REG_IP}:${NEXUS_REG_PORT}/v2/${REPO_NAME}/tags/list |sed 's/,/\\n/g'|grep "\\-DEV-QA" > /tmp/qa-tagged.lst
+                            curl http://${username}:${pass}@${NEXUS_REG_IP}:${NEXUS_REG_PORT}/v2/${REPO_NAME}/tags/list |sed 's/,/\\n/g'|sed 's/]/\\n/g'|grep "\\-DEV-QA" > /tmp/qa-tagged.lst
                             sed 's/^"/"'${REPO_NAME}':/g' /tmp/qa-tagged.lst > ${QA_TAGGED_IMGLST}
                             cat ${QA_TAGGED_IMGLST}
                             '''
