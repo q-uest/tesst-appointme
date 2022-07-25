@@ -95,9 +95,6 @@ pipeline
 		######################
 		
 		
-		JEN_KUBECONFIG="/var/lib/jenkins/.kube/kubeconfig.yaml"
-		JEN_GCP_CRED_KEY="/var/lib/jenkins/.kube/key.json"
-		
 		export GOOGLE_APPLICATION_CREDENTIALS=${JEN_GCP_CRED_KEY}
 		export KUBECONFIG=${JEN_KUBECONFIG}
 		
