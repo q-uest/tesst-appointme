@@ -19,6 +19,10 @@ pipeline
 		ADD_DEV_TAG="${DOCK_IMG_NAME}"+"-DEV"
 		DEV_TAGGED_IMGLST="$HOME/workspace/dev-param.lst"
 		
+		// K8s manifest Template to be used for Dev //
+		
+		k8s_template_file=k8s-deploy-dev-template.yml
+		
 		
 		date_format = new Date().format('dd-MM-yy-HHmm')
 			
@@ -75,7 +79,15 @@ pipeline
        
                 echo "K8S_IMG_NAME=${K8S_IMG_NAME}"
                 sh '''
-                sed  's/<NEW_IMAGE_NAME>/'${K8S_IMG_NAME}'/g' k8s-deploy-template.yml > k8-deploy.yaml
+                sed  's/<NEW_IMAGE_NAME>/'${K8S_IMG_NAME}'/g' k8s-deploy-template.yml > ${k8s_template_file}
+		
+		
+		# Export the Shell variables required to access the GKE cluster
+		######################
+		
+		export GOOGLE_APPLICATION_CREDENTIALS=/var/lib/jenkins/.kube/key.json
+		export KUBECONFIG=/var/lib/jenkins/.kube/kubeconfig.yaml
+		
                 kubectl apply -f k8-deploy.yaml -n dev
 	  
 	            # Add a check to see the APP is working
@@ -86,14 +98,14 @@ pipeline
 	   
 	           
 	            withCredentials([usernamePassword(credentialsId: 'nexus-secret', passwordVariable: 'pass', usernameVariable: 'username')]) 
-                {
-                    sh '''
+                    {
+                       sh '''
 		  
 		            # Add a new tag to the deployed image in Nexus repository to mark it has been rolled out to Dev 
 	                #########
 	  
-                    sudo docker login -u ${username} -p ${pass} ${NEXUS_REG_IP}:${NEXUS_REG_PORT}
-                    sudo docker tag $DOCK_IMG_NAME ${ADD_DEV_TAG}
+                       sudo docker login -u ${username} -p ${pass} ${NEXUS_REG_IP}:${NEXUS_REG_PORT}
+                       sudo docker tag $DOCK_IMG_NAME ${ADD_DEV_TAG}
 		            sudo docker push ${ADD_DEV_TAG}
 	             echo ""
 	             echo "Images that are Deployed onto DEV......."
