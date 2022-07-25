@@ -10,6 +10,8 @@ pipeline {
         DOCK_IMG_NAME="${NEXUS_REG_IP}:${NEXUS_REG_PORT}/"+"${params.docker_image}"
 	
 	    SED_DOCKER_IMG_NAME="${NEXUS_REG_IP}:${NEXUS_REG_PORT}\\/${params.docker_image}"
+	    
+	    k8s_template_file="k8s-deploy-prod-template.yml"
 	
 	                        
         
@@ -28,7 +30,7 @@ pipeline {
 		                  # Generate Kubernetes Deployment manifest from the template
 		                  #####################
                       
-                      sed  's/<NEW_IMAGE_NAME>/'${SED_DOCKER_IMG_NAME}'/g' k8s-deploy-template.yml > k8-deploy.yaml
+                      sed  's/<NEW_IMAGE_NAME>/'${SED_DOCKER_IMG_NAME}'/g' ${k8s_template_file} > k8-deploy.yaml
 		
 		
 		                # Export the Shell variables required to access the GKE cluster
