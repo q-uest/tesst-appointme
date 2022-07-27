@@ -100,4 +100,3 @@ spec:
       command: ['wget']
       args: ['release-name-admin-api:5050']
   restartPolicy: Never
----

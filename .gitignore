@@ -5,3 +5,4 @@ Jenkinsfile
 helm/*
 helm-dev/*
 helm-prod/*
+./helm/*
