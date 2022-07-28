@@ -102,7 +102,7 @@ pipeline
 		export GOOGLE_APPLICATION_CREDENTIALS=${JEN_GCP_CRED_KEY}
 		export KUBECONFIG=${JEN_KUBECONFIG}
 		
-                helm install --upgrade ${HELM_RELEASE_NAME} --set image.repository=${DOCK_IMG_NAME}  --set image.tag=${DOCK_IMG_TAG} -n  ${K8S_NAMESPACE} --wait
+                helm upgrade ${HELM_RELEASE_NAME} --set image.repository=${DOCK_IMG_NAME}  --set image.tag=${DOCK_IMG_TAG} -n  ${K8S_NAMESPACE} --wait
 	  
 	            # Add a check to see the APP is working
 	            ########
