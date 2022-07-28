@@ -4,14 +4,21 @@ pipeline
   agent any 
   environment 
   {
-		
+
+
+                // Trivy Threshold for critical Errors //
 		TRIVY_CRITICAL_THRES=333
+		
+		// ============================================  //
+		// Nexus Docker Private Registry connect Details //
+		// ============================================= //
+		
 		NEXUS_REG_IP='10.182.0.16'
 		NEXUS_REG_PORT=8082
-		
 		REPO_NAME="appointme-admin-api"
 		
-		
+				
+		// ============================================================================================================ //
 		// Helm expects to have 2 parameters Docker Image name and Tag, hence DOCK_IMG & DOCK_IMG_TAG used respectively //
 		// ============================================================================================================ //
 				
@@ -19,46 +26,46 @@ pipeline
 		DOCK_IMG_TAG="${BUILD_NUMBER}"
 		DOCK_IMG="${DOCK_IMG_NAME}"+":"+"${DOCK_IMG_TAG}"
 		
-		//    =============================================//
 		
 		
+		// =====================================================================================================================//
 		// These variables used in the post-deployment of the image into DEV and to get the tag updated with the the string DEV //
-		// ===================================================================================================================== //
+		// =====================================================================================================================//
 		
 		ADD_DEV_TAG="${DOCK_IMG}"+"-DEV"
 		DEV_TAGGED_IMGLST="$HOME/workspace/dev-param.lst"
 		
-		// ============================================ //
-                
 		
 		
-		
-		
-		// Provide the DEV cluster Details and GCP Priavte Key file path here....//
+		// ===================================================================== //
+                // Provide the DEV cluster Details and GCP Priavte Key file path here    //
 		// ===================================================================== //
 		
 		JEN_KUBECONFIG="/var/lib/jenkins/.kube/kubeconfig.yaml"
 		JEN_GCP_CRED_KEY="/var/lib/jenkins/.kube/key.json"
 		
-                //================================================//
 		
-		
-		
-		// Helm Release Name & Namespace to be used //
-		// ======================================== //
+                //================================================//		
+		// Helm Release Name & Namespace to be used      //
+		// ============================================ //
 		
                 HELM_RELEASE_NAME="dev"
                 K8S_NAMESPACE="dev"
 		
+		
+		//================================================== //		
 	        // Timeout for the Deployment. Default is 5  minutes //
+		//================================================== //		
 		
                  HELM_DEP_TIMEOUT="2m0s"
 		 
+		 // ============================ //
 		//  Path for the Helm Templates //
+		// ============================ //
 		
 		HELM_TEMPLATE_PATH="./helm-dev"
 		
-                // ===============================           //
+                
    }
 
   stages 
