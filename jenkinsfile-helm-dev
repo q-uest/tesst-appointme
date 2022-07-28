@@ -15,7 +15,7 @@ pipeline
                 DOCK_IMG_TAG="${BUILD_NUMBER}"
 		DOCK_IMG="${DOCK_IMG_NAME}"+":"+"${DOCK_IMG_TAG}"
 		
-		// K8S_IMG_NAME needed by the SED command to replace a literal value in the template with a new image (with "slace" as part of it)  //
+		//K8S_IMG_NAME needed by the SED command to replace a literal value in the template with a new image (with "slace" as part of it)  //
                 K8S_IMG_NAME="${NEXUS_REG_IP}:${NEXUS_REG_PORT}\\/${REPO_NAME}:${BUILD_NUMBER}"
 		
 		// The image deployed in DEV should have the tag updated to include the string DEV //
