@@ -8,7 +8,7 @@ image:
   repository: 10.182.0.16:8082/appointme-admin-api
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "tagme"
+  tag: ""
 
 imagePullSecrets:
   - name: regcred

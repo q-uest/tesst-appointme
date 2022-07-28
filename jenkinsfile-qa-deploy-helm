@@ -52,12 +52,13 @@ pipeline {
 		export GOOGLE_APPLICATION_CREDENTIALS=${JEN_GCP_CRED_KEY}
 		export KUBECONFIG=${JEN_KUBECONFIG}
 		
-		
+	        DOCK_IMG=`echo $DOCK_IMG_NAME|cut -d ":" -f3`
+                TAG_NAME=`echo $DOCK_IMG_NAME|cut -d ":" -f1,2`
 		
 		# Deploy in the namespace called "qa"
 		##########
 		
-               helm upgrade --install ${HELM_RELEASE_NAME} --set image.repository=${DOCK_IMG_NAME} -n  ${K8S_NAMESPACE} ${HELM_TEMPL_PATH} --wait  
+               helm upgrade --install ${HELM_RELEASE_NAME} --set image.repository=${DOCK_IMG} --set image.tag=${TAG_NAME} -n  ${K8S_NAMESPACE} ${HELM_TEMPL_PATH} --wait  
                         
                 # Add a check whether the deployment is working
                 #####
