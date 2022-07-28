@@ -1,0 +1,101 @@
+pipeline {
+
+     agent any;
+
+    environment {
+    
+    
+    
+    // ============================================  //
+    // Nexus Docker Private Registry connect Details //
+    // ============================================= //
+		
+		NEXUS_REG_IP='10.182.0.16'
+		NEXUS_REG_PORT=8082
+		REPO_NAME="appointme-admin-api"
+    
+    
+    // ============================================================================== //
+    // Docker image name  //
+    // ============================================================================== //
+	
+      DOCK_IMG_NAME="${NEXUS_REG_IP}:${NEXUS_REG_PORT}/"+"${params.docker_image}"
+    
+    
+    // ============================================================================== //
+    // HELM specific variables for Namespace, Templates path & Release Name           //
+    // ============================================================================== //
+
+       K8S_NAMESPACE="prod" 
+       HELM_TEMPL_PATH="helm-prod"
+       HELM_RELEASE_NAME="helm-prod"
+	
+	
+
+      //================================================== //		
+      // Timeout for the Deployment. Default is 5  minutes //
+      //================================================== //		
+		
+        HELM_DEP_TIMEOUT="2m0s"
+	
+            
+	    
+      //==================================================================//
+      // Provide the DEV cluster Details and GCP Priavte Key details here //
+      //==================================================================//
+	    
+	    
+	JEN_KUBECONFIG="/var/lib/jenkins/.kube/kubeconfig.yaml"
+	JEN_GCP_CRED_KEY="/var/lib/jenkins/.kube/key.json"
+		
+      
+	                       
+        
+    }
+    stages {
+       
+        stage("Deploy the image into QA")
+        {
+            steps {
+
+               
+	
+                sh '''
+		      
+            
+		
+		
+		 # Export the Shell variables required to access the GKE cluster
+		  ######################
+                    
+		 export GOOGLE_APPLICATION_CREDENTIALS=${JEN_GCP_CRED_KEY}
+		 export KUBECONFIG=${JEN_KUBECONFIG}
+		
+		 ####################################
+		# Extract Docker image name and Tag name to pass on with the Helm command below
+		#################
+		
+		DOCK_IMG=`echo $DOCK_IMG_NAME|cut -d ":" -f1,2`
+                TAG_NAME=`echo $DOCK_IMG_NAME|cut -d ":" -f3`
+		
+		################################################
+		# Deploy in the namespace called "prod"
+		########################		 
+		
+                 helm upgrade --install ${HELM_RELEASE_NAME} --set image.repository=${DOCK_IMG} --set image.tag=${TAG_NAME} -n  ${K8S_NAMESPACE} ${HELM_TEMPL_PATH} --wait  --timeout=${HELM_DEP_TIMEOUT}
+		
+                        
+                    # Add a check whether the deployment is working
+                    #####
+                    
+                    
+                    
+                    
+              '''
+            }
+
+        }
+
+
+    }
+}
