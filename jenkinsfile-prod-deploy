@@ -2,7 +2,7 @@ pipeline {
 
      agent any;
 
-    environment {
+     environment {
         NEXUS_REG_IP='10.182.0.16'
     		NEXUS_REG_PORT=8082
     
