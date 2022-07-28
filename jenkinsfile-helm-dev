@@ -105,7 +105,7 @@ pipeline
                 helm upgrade --install ${HELM_RELEASE_NAME} --set image.repository=${DOCK_IMG_NAME}  --set image.tag=${DOCK_IMG_TAG} -n  ${K8S_NAMESPACE} ./helm-dev --wait
 	  
 	            # Add a check to see the APP is working
-	            ########
+	            #######
 	  
 	            '''
 	           
