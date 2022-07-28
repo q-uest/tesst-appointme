@@ -52,8 +52,8 @@ pipeline {
 		export GOOGLE_APPLICATION_CREDENTIALS=${JEN_GCP_CRED_KEY}
 		export KUBECONFIG=${JEN_KUBECONFIG}
 		
-	        DOCK_IMG=`echo $DOCK_IMG_NAME|cut -d ":" -f3`
-                TAG_NAME=`echo $DOCK_IMG_NAME|cut -d ":" -f1,2`
+	        DOCK_IMG=`echo $DOCK_IMG_NAME|cut -d ":" -f1,2`
+                TAG_NAME=`echo $DOCK_IMG_NAME|cut -d ":" -f3`
 		
 		# Deploy in the namespace called "qa"
 		##########
