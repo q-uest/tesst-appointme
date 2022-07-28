@@ -12,29 +12,30 @@ pipeline
 		REPO_NAME="appointme-admin-api"
 		
 		
-		
+		// Helm expects to have 2 parameters Docker Image name and Tag, hence DOCK_IMG & DOCK_IMG_TAG used respectively //
+		// ============================================================================================================ //
+				
 		DOCK_IMG_NAME="${NEXUS_REG_IP}:${NEXUS_REG_PORT}/${REPO_NAME}"
 		DOCK_IMG_TAG="${BUILD_NUMBER}"
 		DOCK_IMG="${DOCK_IMG_NAME}"+":"+"${DOCK_IMG_TAG}"
 		
+		//    =============================================//
 		
-		// These variables used post-deployment of the image into DEV and should have the tag updated to include the string DEV //
+		
+		// These variables used in the post-deployment of the image into DEV and to get the tag updated with the the string DEV //
+		// ===================================================================================================================== //
+		
 		ADD_DEV_TAG="${DOCK_IMG}"+"-DEV"
 		DEV_TAGGED_IMGLST="$HOME/workspace/dev-param.lst"
 		
-		
+		// ============================================ //
                 
-		//K8S_IMG_NAME needed by the SED command to replace a literal value in the template with a new image (with "slace" as part of it)  //
-                K8S_IMG_NAME="${NEXUS_REG_IP}:${NEXUS_REG_PORT}\\/${REPO_NAME}:${BUILD_NUMBER}"
 		
 		
-		// K8s manifest Template to be used for "Dev"  //
 		
-		k8s_template_file="k8s-deploy-dev-template.yml"
 		
-		//==================================================//
-		
-		// Provide the DEV cluster Details and GCP Priavte Key details here //
+		// Provide the DEV cluster Details and GCP Priavte Key file path here....//
+		// ===================================================================== //
 		
 		JEN_KUBECONFIG="/var/lib/jenkins/.kube/kubeconfig.yaml"
 		JEN_GCP_CRED_KEY="/var/lib/jenkins/.kube/key.json"
@@ -42,11 +43,22 @@ pipeline
                 //================================================//
 		
 		
+		
+		// Helm Release Name & Namespace to be used //
+		// ======================================== //
+		
                 HELM_RELEASE_NAME="dev"
                 K8S_NAMESPACE="dev"
-
-		date_format = new Date().format('dd-MM-yy-HHmm')
-			
+		
+	        // Timeout for the Deployment. Default is 5  minutes //
+		
+                 HELM_DEP_TIMEOUT="2m0s"
+		 
+		//  Path for the Helm Templates //
+		
+		HELM_TEMPLATE_PATH="./helm-dev"
+		
+                // ===============================           //
    }
 
   stages 
@@ -98,11 +110,8 @@ pipeline
             steps
             {
        
-                echo "K8S_IMG_NAME=${K8S_IMG_NAME}"
-                sh '''
-                sed  's/<NEW_IMAGE_NAME>/'${K8S_IMG_NAME}'/g' ${k8s_template_file} > k8-deploy.yaml
-		
-		
+                
+		sh '''
 		# Export the Shell variables required to access the GKE cluster
 		######################
 		
@@ -110,12 +119,12 @@ pipeline
 		export GOOGLE_APPLICATION_CREDENTIALS=${JEN_GCP_CRED_KEY}
 		export KUBECONFIG=${JEN_KUBECONFIG}
 		
-                helm upgrade --install ${HELM_RELEASE_NAME} --set image.repository=${DOCK_IMG_NAME}  --set image.tag=${DOCK_IMG_TAG} -n  ${K8S_NAMESPACE} ./helm-dev --wait
+                helm upgrade --install ${HELM_RELEASE_NAME} --set image.repository=${DOCK_IMG_NAME}  --set image.tag=${DOCK_IMG_TAG} -n  ${K8S_NAMESPACE} ${HELM_TEMPLATE_PATH} --wait --timeout=${HELM_DEP_TIMEOUT}
 	  
 	            # Add a check to see the APP is working
 	            #######
 	  
-	            '''
+	        '''
 	           
 	   
 	           
