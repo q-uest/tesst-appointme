@@ -1,0 +1,96 @@
+pipeline {
+
+     agent any;
+
+    environment {
+        NEXUS_REG_IP='10.182.0.16'
+		NEXUS_REG_PORT=8082
+    
+       REPO_NAME="appointme-admin-api"
+        DOCK_IMG_NAME="${NEXUS_REG_IP}:${NEXUS_REG_PORT}/"+"${params.docker_image}"
+
+       K8S_NAMESPACE="qa" 
+       HELM_TEMPL_PATH="helm-qa"
+       HELM_RELEASE_NAME="helm-qa"
+	
+	SED_DOCKER_IMG_NAME="${NEXUS_REG_IP}:${NEXUS_REG_PORT}\\/${params.docker_image}"
+	
+	k8s_template_file="k8s-deploy-qa-template.yml"
+	
+	ADD_QA_TAG="${DOCK_IMG_NAME}"+"-QA"
+        QA_TAGGED_IMGLST="$HOME"+"/workspace/qa-images.lst"
+                    
+        //==================================================//
+		
+		// Provide the DEV cluster Details and GCP Priavte Key details here //
+		
+		JEN_KUBECONFIG="/var/lib/jenkins/.kube/kubeconfig.yaml"
+		JEN_GCP_CRED_KEY="/var/lib/jenkins/.kube/key.json"
+		
+                //================================================//
+
+        
+    }
+    stages {
+       
+        stage("Deploy the image into QA")
+        {
+            steps {
+
+               
+	
+                sh '''
+		echo DOCK_IMG_NAME=${DOCK_IMG_NAME}
+		
+		# Generate Kubernetes Deployment manifest from the template
+		#####################
+                sed  's/<NEW_IMAGE_NAME>/'${SED_DOCKER_IMG_NAME}'/g' ${k8s_template_file} > k8-deploy.yaml
+		
+		
+		# Export the Shell variables required to access the GKE cluster
+		######################
+		export GOOGLE_APPLICATION_CREDENTIALS=${JEN_GCP_CRED_KEY}
+		export KUBECONFIG=${JEN_KUBECONFIG}
+		
+		
+		
+		# Deploy in the namespace called "qa"
+		##########
+		
+               helm upgrade --install ${HELM_RELEASE_NAME} --set image.repository=${DOCK_IMG_NAME} -n  ${K8S_NAMESPACE} ${HELM_TEMPL_PATH} --wait  
+                        
+                # Add a check whether the deployment is working
+                #####
+              '''
+            }
+
+        }
+
+
+        stage('Update the Tag of the image to indicate it is deployed in QA')
+        {
+            steps 
+               {
+                    withCredentials([usernamePassword(credentialsId: 'nexus-secret', passwordVariable: 'pass', usernameVariable: 'username')]) 
+                    {
+                            sh '''
+                
+                            #Add a new tag to the deployed image in Nexus repository to mark it has been rolled out to Dev 
+                            ##########   
+                        
+                            sudo docker login -u ${username} -p ${pass} ${NEXUS_REG_IP}:${NEXUS_REG_PORT}
+                            sudo docker tag $DOCK_IMG_NAME ${ADD_QA_TAG}
+                            sudo docker push ${ADD_QA_TAG}
+                            echo ""
+                            echo "Images that are Deployed onto QA......."
+                            echo ""
+                            curl http://${username}:${pass}@${NEXUS_REG_IP}:${NEXUS_REG_PORT}/v2/${REPO_NAME}/tags/list |sed 's/,/\\n/g'|sed 's/\\"//g'|sed 's/]/\\n/g'|grep "\\-DEV-QA" > /tmp/qa-tagged.lst
+                            sed 's/^/'${REPO_NAME}':/g' /tmp/qa-tagged.lst > ${QA_TAGGED_IMGLST}
+                            cat ${QA_TAGGED_IMGLST}
+                            '''
+	               }  
+                }
+        }
+    }
+}
+
