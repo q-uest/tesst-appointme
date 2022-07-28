@@ -116,7 +116,7 @@ pipeline
                        sh '''
 		  
 		            # Add a new tag to the deployed image in Nexus repository to mark it has been rolled out to Dev 
-	                    #########
+	                    ########
 	  
                             sudo docker login -u ${username} -p ${pass} ${NEXUS_REG_IP}:${NEXUS_REG_PORT}
                             sudo docker tag $DOCK_IMG_NAME ${ADD_DEV_TAG}
