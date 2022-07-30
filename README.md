@@ -1,6 +1,5 @@
-push@main Change 30/07/2022 @10:55
-
-- Application is written on ```ReactJs``` and need ```node 14``` run properly 
+push@main Change 30/07/2022 @12:05 
+Application is written on ```ReactJs``` and need ```node 14``` run properly 
 
 - To build the application command is ```  npm install ```
 
