@@ -1,4 +1,4 @@
-push@main Change tag sprint1
+push@main Change tag sprint1+regular change done
 
 - Application is written on ```ReactJs``` and need ```node 14``` run properly 
 
